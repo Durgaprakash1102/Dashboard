@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team 1 Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h2 {
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #20559b;
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            display: none;
+            margin-left: 10px;
+        }
+        
+        .submit-button {
+            display: none;
+        }
+        
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .flex-item {
+            width: 48%;
+        }
+        
+        header {
+            background-color: #2077be;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            margin: 0;
+            /* Remove default margin for h1 */
+        }
+        
+        footer {
+            background-color: #266bd3;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Vindus Environment Private Limited</h1>
+        <button class="logout-button" onclick="location.href='{% url 'logout' %}'">Logout</button>
+
+    </header>
+
+    <h3 align="center">Welcome to Team 1 Dashboard, {{ user.username }}</h3>
+    <h5 align="center">Login ID: {{ user.email }}</h5>
+
+
+    <!-- Main table with empty status customers -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Action</th>
+                <th>Status</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %} {% if not customer.is_interested and not customer.is_not_interested %}
+            <tr>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>
+                    <form method="POST" action="{% url 'update_interest_status' customer.id %}" class="action-buttons">
+                        {% csrf_token %}
+                        <input type="hidden" name="reason" id="reason-{{ customer.id }}" value="">
+                        <input type="hidden" name="interest_action" id="interest-action-{{ customer.id }}" value="">
+
+                        <!-- Interested Button -->
+                        <button type="button" onclick="setInterest('{{ customer.id }}', 'interested')">Interested</button>
+
+                        <!-- Not Interested Button -->
+                        <button type="button" onclick="showReasonInput('{{ customer.id }}')">Not Interested</button>
+
+                        <!-- Input field for Not Interested reason -->
+                        <input type="text" id="reason-input-{{ customer.id }}" placeholder="Enter reason" oninput="updateReasonInput('{{ customer.id }}', this.value)">
+
+                        <!-- Submit button for Not Interested -->
+                        <button type="submit" class="submit-button" id="submit-not-interested-{{ customer.id }}">Submit</button>
+                    </form>
+                </td>
+
+                <!-- Status Field -->
+                <td>
+                    {% if customer.is_interested %} Interested {% elif customer.is_not_interested %} Not Interested {% else %}
+                    <!-- Status is empty -->
+                    {% endif %}
+                </td>
+                <td>{{ customer.reason }}</td>
+            </tr>
+            {% endif %} {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Separate sections for Interested and Not Interested customers -->
+    <div class="flex-container">
+        <div class="flex-item">
+            <h3>Interested Candidates</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in interested_customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex-item">
+            <h3>Not Interested Candidates</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in not_interested_customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{customer.phone}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Vindus Environment Private Limited. All rights reserved.</p>
+    </footer>
+    <script>
+        // Show reason input and Not Interested submit button
+        function showReasonInput(id) {
+            document.getElementById('reason-input-' + id).style.display = 'inline';
+            document.getElementById('submit-not-interested-' + id).style.display = 'inline';
+            document.getElementById('interest-action-' + id).value = 'not_interested';
+        }
+
+        // Update the hidden reason field value
+        function updateReasonInput(id, value) {
+            document.getElementById('reason-' + id).value = value;
+        }
+
+        // Set the form for Interested status and submit
+        function setInterest(id, action) {
+            document.getElementById('interest-action-' + id).value = action;
+            document.getElementById('submit-not-interested-' + id).closest('form').submit();
+        }
+    </script>
+</body>
+
+</html>

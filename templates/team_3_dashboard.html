@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Follow-Up Team Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+        
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+        
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-container input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th,
+        td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        td {
+            color: #555;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .action-buttons button {
+            margin: 5px 0;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-buttons button[type="submit"] {
+            background-color: #28a745;
+        }
+        
+        .action-buttons button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        
+        .action-buttons button[type="button"] {
+            background-color: #dc3545;
+        }
+        
+        .action-buttons button[type="button"]:hover {
+            background-color: #c82333;
+        }
+        
+        .reason-container {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            margin-top: 5px;
+        }
+        
+        input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        button,
+        input[type="text"],
+        textarea,
+        input[type="date"] {
+            transition: all 0.3s ease;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1 style="color: white;" align="center">Vindus Environemnt Private Limited</h1>
+        <button class="logout-button" onclick="location.href='{% url 'logout' %}'">Logout</button>
+
+    </div>
+    <h3 align="center">Welcome to Team 3 Dashboard, {{ user.username }}</h3>
+    <h5 align="center">Login ID: {{ user.email }}</h5>
+
+    <div class="search-container">
+        <form method="GET" action="">
+            <input type="text" name="q" placeholder="Search by Loan ID" />
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+
+    <!-- Table for Pending EMI Loans -->
+    <h2>Loans with Pending EMI</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Loan ID</th>
+                <th>Present Loan Amount</th>
+                <th>Total Monthly EMI</th>
+                <th>Due Date</th>
+                <th>EMI Cleared</th>
+                <th>Extended Due Date</th>
+                <th>Critical Loan Status</th>
+                <th>Actions</th>
+                <th>Reason for Pending EMI</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in pending_loans %} {% if loan.critical_loan_status|lower != 'critical' %}
+            <tr>
+                <td>{{ loan.name }}</td>
+                <td>{{ loan.phone }}</td>
+                <td>{{ loan.loan_id }}</td>
+                <td>{{ loan.present_loan_amount }}</td>
+                <td>{{ loan.total_monthly_emi_amount }}</td>
+                <td>{{ loan.emi_due_date }}</td>
+                <td>{{ loan.emi_cleared|yesno:"Yes,No" }}</td>
+                <td>{{ loan.extended_due_date }}</td>
+                <td>{{ loan.critical_loan_status }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <form method="POST" action="{% url 'update_emi_status' loan.loan_id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="emi_cleared" value="true">EMI Cleared</button>
+                            <button type="button" onclick="document.getElementById('reason-{{ loan.loan_id }}').style.display='block';">EMI Not Cleared</button>
+                            <div id="reason-{{ loan.loan_id }}" class="reason-container">
+                                <textarea name="due_date_pending_reason" placeholder="Reason (if applicable)"></textarea>
+                                <button type="submit" name="emi_cleared" value="false">Submit Reason</button>
+                            </div>
+                        </form>
+                        <form method="POST" action="{% url 'extend_due_date' loan.loan_id %}">
+                            {% csrf_token %}
+                            <input type="date" name="extended_due_date" required />
+                            <button type="submit">Extend Due Date</button>
+                        </form>
+                    </div>
+                </td>
+                <td>{{ loan.due_date_pending_reason }}</td>
+            </tr>
+            {% endif %} {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Table for Cleared EMI Loans -->
+    <h2>Loans with Cleared EMI</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Loan ID</th>
+                <th>Present Loan Amount</th>
+                <th>Total Monthly EMI</th>
+                <th>Due Date</th>
+                <th>EMI Cleared</th>
+                <th>Extended Due Date</th>
+                <th>Critical Loan Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in cleared_loans %} {% if loan.critical_loan_status|lower != 'critical' %}
+            <tr>
+                <td>{{ loan.name }}</td>
+                <td>{{ loan.phone }}</td>
+                <td>{{ loan.loan_id }}</td>
+                <td>{{ loan.present_loan_amount }}</td>
+                <td>{{ loan.total_monthly_emi_amount }}</td>
+                <td>{{ loan.emi_due_date }}</td>
+                <td>{{ loan.emi_cleared|yesno:"Yes,No" }}</td>
+                <td>{{ loan.extended_due_date }}</td>
+                <td>{{ loan.critical_loan_status }}</td>
+            </tr>
+            {% endif %} {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        &copy; 2024 Follow-Up Team. All rights reserved.
+    </div>
+</body>
+
+</html>

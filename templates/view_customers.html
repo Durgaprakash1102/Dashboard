@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Customers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #35424a;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        nav ul {
+            padding: 0;
+            list-style: none;
+            text-align: center;
+            margin: 0;
+        }
+        
+        nav ul li {
+            display: inline-block;
+            margin: 0 15px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        nav ul li {
+            margin: 0 20px;
+        }
+        
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: #34495e;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            background: #1abc9c;
+        }
+        
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h2 {
+            margin-top: 20px;
+            color: #35424a;
+        }
+        
+        .button-container {
+            margin: 20px 0;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .button:hover {
+            background: #1abc9c;
+        }
+        
+        .table-container {
+            width: 100%;
+            display: none;
+            /* Hide tables by default */
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        table th,
+        table td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        table th {
+            background: #35424a;
+            color: white;
+        }
+        
+        footer {
+            background-color: #35424a;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function showTable(tableId) {
+            // Hide all table containers
+            const tables = document.querySelectorAll('.table-container');
+            tables.forEach(table => table.style.display = 'none');
+
+            // Show the selected table
+            document.getElementById(tableId).style.display = 'block';
+        }
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Super Admin Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'super_admin_dashboard' %}">Dashboard Home</a></li>
+                <li><a href="{% url 'create_user' %}">Create User</a></li>
+                <li><a href="{% url 'view_customers' %}">Customers</a></li>
+                <li><a href="{% url 'view_loans' %}">Loans</a></li>
+                <li><a href="{% url 'view_users' %}">Users</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="button-container">
+            <button class="button" onclick="showTable('allCustomers')">All Customers</button>
+            <button class="button" onclick="showTable('interestedCustomers')">Interested Customers</button>
+            <button class="button" onclick="showTable('notInterestedCustomers')">Not Interested Customers</button>
+
+        </div>
+
+        <div id="interestedCustomers" class="table-container">
+            <h2>Interested Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %} {% if customer.is_interested %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.gender }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="4">No interested customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="notInterestedCustomers" class="table-container">
+            <h2>Not Interested Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %} {% if customer.is_not_interested %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.gender }}</td>
+                        <td>{{ customer.reason }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="5">No not interested customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="allCustomers" class="table-container">
+            <h2>All Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Interested</th>
+                        <th>Not Interested</th>
+                        <th>Eligible</th>
+                        <th>Not Eligible</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.dob }}</td>
+                        <td>{{ customer.gender }}</td>
+                        <td>{{ customer.address }}</td>
+                        <td>{{ customer.is_interested|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_not_interested|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_eligible|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_not_eligible|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.reason }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">No customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+    <script>
+        // Initialize with the first table visible
+        showTable('interestedCustomers');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>view Users</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #35424a, #1abc9c);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        nav ul {
+            padding: 0;
+            list-style: none;
+            text-align: center;
+            margin: 0;
+        }
+        
+        nav ul li {
+            display: inline-block;
+            margin: 0 15px;
+        }
+        
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: #34495e;
+            transition: background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        nav ul li a:hover {
+            background: #1abc9c;
+        }
+        
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            margin: 20px 0;
+            color: #ffffff;
+        }
+        
+        h2 {
+            margin-top: 20px;
+            color: #35424a;
+            font-size: 1.5em;
+            border-bottom: 2px solid #1abc9c;
+            padding-bottom: 5px;
+        }
+        
+        .button-container {
+            margin: 20px 0;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button:hover {
+            background: #1abc9c;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th,
+        td {
+            border: 1px solid #dddddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #35424a;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .error {
+            color: red;
+        }
+        
+        .success {
+            color: green;
+        }
+        
+        footer {
+            background-color: #35424a;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        
+        .password-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        
+        .password-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-container button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Super Admin Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'super_admin_dashboard' %}">Dashboard Home</a></li>
+                <li><a href="{% url 'create_user' %}">Create User</a></li>
+                <li><a href="{% url 'view_customers' %}">Customers</a></li>
+                <li><a href="{% url 'view_loans' %}">Loans</a></li>
+                <li><a href="{% url 'view_users' %}">Users</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Users</h2>
+
+        <div class="button-container">
+            <button class="button" onclick="filterUsers('team_1')">Team 1</button>
+            <button class="button" onclick="filterUsers('team_2')">Team 2</button>
+            <button class="button" onclick="filterUsers('team_3')">Team 3</button>
+            <button class="button" onclick="filterUsers('team_4')">Team 4</button>
+            <button class="button" onclick="filterUsers('super_admin')">Managers</button>
+            <button class="button" onclick="filterUsers('superuser')">Admin</button>
+            <button class="button" onclick="filterUsers('all')">All Users</button>
+        </div>
+
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="user-row" data-role="{{ user.role }}">
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.role %} {{ user.role }} {% elif user.is_superuser %} Superuser {% else %} N/A {% endif %}
+                    </td>
+                    <td class="password-container">
+                        <input type="password" class="password-field" id="password-field-{{ forloop.counter0 }}" value="{{ user.original_password }}" readonly>
+                        <button class="button" onclick="togglePassword({{ forloop.counter0 }}, this)">Show Password</button>
+                    </td>
+                    <td>
+                        <a href="{% url 'delete_user' user.id %}" class="button" style="background-color: #e74c3c;">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No users available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if messages %} {% for message in messages %}
+        <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %} {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function filterUsers(role) {
+            const rows = document.querySelectorAll('.user-row');
+
+            rows.forEach(row => {
+                const userRole = row.getAttribute('data-role');
+                const isSuperuser = row.querySelector('td:nth-child(3)').textContent.trim() === 'Superuser';
+
+                if (role === 'all') {
+                    row.style.display = '';
+                } else {
+                    if ((userRole === role) || (role === 'superuser' && isSuperuser)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function togglePassword(index, button) {
+            const passwordField = document.getElementById(`password-field-${index}`);
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text"; // Show password
+                button.textContent = "Hide Password"; // Change button text
+            } else {
+                passwordField.type = "password"; // Hide password
+                button.textContent = "Show Password"; // Change button text
+            }
+        }
+    </script>
+
+</body>
+
+</html>

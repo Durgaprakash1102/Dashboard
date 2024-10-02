@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .otp-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+            color: #666;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .message-list {
+            margin-top: 10px;
+            color: red;
+            text-align: left;
+        }
+        
+        .message-list ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .message-list li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-container">
+        <h2>Verify OTP</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="otp">Enter OTP:</label>
+            <input type="text" name="otp" required>
+            <button type="submit">Verify</button>
+        </form>
+        {% if messages %}
+        <div class="message-list">
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

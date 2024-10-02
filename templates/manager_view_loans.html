@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            padding: 0;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        nav ul li {
+            margin: 0 20px;
+        }
+        
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: #34495e;
+            transition: background 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            background: #1abc9c;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #16a085;
+        }
+        
+        .table-wrapper {
+            display: none;
+            /* Hide tables by default */
+            margin-bottom: 20px;
+        }
+        
+        .table-wrapper.active {
+            display: block;
+            /* Show active table */
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #dddddd;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #f1c40f;
+            color: white;
+        }
+        
+        footer {
+            margin-top: 40px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            width: 100%;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .button-back {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+        
+        .button-back:hover {
+            background-color: #c0392b;
+        }
+    </style>
+    <script>
+        function showTable(tableId) {
+            const tables = document.querySelectorAll('.table-wrapper');
+            tables.forEach(table => {
+                if (table.id === tableId) {
+                    table.classList.add('active');
+                } else {
+                    table.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Manager Dashboard</h1> <br>
+        <nav>
+            <ul>
+                <li><a href="{% url 'team_4_dashboard' %}">Home</a></li>
+                <li><a href="{% url 'manager_create_users' %}">Create Users</a></li>
+                <li><a href="{% url 'upload_loan_details' %}">Upload Loans</a></li>
+                <li><a href="{% url 'upload_customer_details' %}">Upload Customers</a></li>
+                <li><a href="{% url 'manager_view_customers' %}">View Customers</a></li>
+                <li><a href="{% url 'manager_view_loans' %}">View Loans</a></li>
+                <li><a href="{% url 'manager_view_users' %}">View Users</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="button-group">
+            <button class="button" onclick="showTable('emiClearedLoans')">EMI Cleared Loans</button>
+            <button class="button" onclick="showTable('normalLoans')">Pending EMI Loans</button>
+            <button class="button" onclick="showTable('criticalLoans')">Critical Loans</button>
+        </div>
+
+        <div id="emiClearedLoans" class="table-wrapper active">
+            <h2>EMI Cleared Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>EMI Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if loan.emi_cleared %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.emi_cleared }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="4">No EMI cleared loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="normalLoans" class="table-wrapper">
+            <h2>Pending EMI Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Pending EMI Amount</th>
+                        <th>EMI Due Date</th>
+                        <th>EMI Pending Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if not loan.emi_cleared and loan.critical_loan_status == 'NORMAL' %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.total_monthly_emi_amount }}</td>
+                        <td>{{ loan.emi_due_date }}</td>
+                        <td>{{ loan.due_date_pending_reason }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="6">No normal loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="criticalLoans" class="table-wrapper">
+            <h2>Critical Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Extended Due Date</th>
+                        <th>Loan Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if loan.critical_loan_status == 'CRITICAL' %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.extended_due_date }}</td>
+                        <td>{{ loan.critical_loan_status }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="5">No critical loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'team_4_dashboard' %}" class="button button-back">Back to Dashboard</a>
+    </div>
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

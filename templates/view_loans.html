@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Loans</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            width: 95%;
+            margin: 20px auto;
+            overflow-x: auto;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        h1,
+        h2 {
+            color: #35424a;
+            text-align: center;
+            margin: 0;
+        }
+        
+        h1 {
+            margin-top: 10px;
+            font-size: 2em;
+        }
+        
+        h2 {
+            margin-top: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #35424a;
+            padding-bottom: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .button {
+            background-color: #35424a;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .button:hover {
+            background-color: #2c3e50;
+        }
+        
+        .table-wrapper {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        table th {
+            background-color: #35424a;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #35424a;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #35424a;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+            color: white;
+        }
+        
+        nav ul {
+            padding: 0;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        nav ul li {
+            margin: 0 20px;
+        }
+        
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: #34495e;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            background: #1abc9c;
+        }
+    </style>
+    <script>
+        function showTable(tableId) {
+            const tables = document.querySelectorAll('.table-wrapper');
+            tables.forEach(table => {
+                table.style.display = 'none'; // Hide all tables
+            });
+            document.getElementById(tableId).style.display = 'flex'; // Show the selected table
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Super Admin Dashboard</h1> <br>
+        <nav>
+            <ul>
+                <li><a href="{% url 'super_admin_dashboard' %}">Dashboard Home</a></li>
+                <li><a href="{% url 'create_user' %}">Create User</a></li>
+                <li><a href="{% url 'view_customers' %}">Customers</a></li>
+                <li><a href="{% url 'view_loans' %}">Loans</a></li>
+                <li><a href="{% url 'view_users' %}">Users</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>All Loans</h2>
+        <div class="button-group">
+            <button class="button" onclick="showTable('emiClearedLoans')">EMI Cleared Loans</button>
+            <button class="button" onclick="showTable('normalLoans')">Pending Emi Loans</button>
+            <button class="button" onclick="showTable('criticalLoans')">Critical Loans</button>
+        </div>
+
+        <div id="emiClearedLoans" class="table-wrapper">
+            <h2>EMI Cleared Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>EMI Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if loan.emi_cleared %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.emi_cleared }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="4">No EMI cleared loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="normalLoans" class="table-wrapper">
+            <h2>Pending Emi Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Pending Emi Amount</th>
+                        <th>EMI Due Date</th>
+                        <th>EMI Pending Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if not loan.emi_cleared and loan.critical_loan_status == 'NORMAL' %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.total_monthly_emi_amount }}</td>
+                        <td>{{ loan.emi_due_date }}</td>
+                        <td>{{ loan.due_date_pending_reason }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="6">No normal loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="criticalLoans" class="table-wrapper">
+            <h2>Critical Loans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Extended Due Date</th>
+                        <th>Loan Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %} {% if loan.critical_loan_status == 'CRITICAL' %}
+                    <tr>
+                        <td>{{ loan.loan_id }}</td>
+                        <td>{{ loan.name }}</td>
+                        <td>{{ loan.phone }}</td>
+                        <td>{{ loan.extended_due_date }}</td>
+                        <td>{{ loan.critical_loan_status }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="5">No critical loans available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'super_admin_dashboard' %}" class="button button-back">Back to Dashboard</a>
+
+
+
+    </div>
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Initialize with the first table visible
+        showTable('emiClearedLoans');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            padding: 0;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        nav ul li {
+            margin: 0 20px;
+        }
+        
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: #34495e;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        nav ul li a:hover {
+            background: #1abc9c;
+        }
+        
+        nav ul li a:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background: #1abc9c;
+            left: 50%;
+            bottom: -5px;
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+        
+        nav ul li a:hover:after {
+            width: 100%;
+            left: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .table-container {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        footer {
+            margin-top: 40px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            width: 100%;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Manager Dashboard</h1><br>
+        <nav>
+            <ul>
+                <li><a href="{% url 'team_4_dashboard' %}">Home</a></li>
+                <li><a href="{% url 'manager_create_users' %}">Create Users</a></li>
+                <li><a href="{% url 'upload_loan_details' %}">Upload Loans</a></li>
+                <li><a href="{% url 'upload_customer_details' %}">Upload Customers</a></li>
+                <li><a href="{% url 'manager_view_customers' %}">View Customers</a></li>
+                <li><a href="{% url 'manager_view_loans' %}">View Loans</a></li>
+                <li><a href="{% url 'manager_view_users' %}">View Users</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="button-container">
+            <button class="button" onclick="showTable('allCustomers')">All Customers</button>
+            <button class="button" onclick="showTable('interestedCustomers')">Interested Customers</button>
+            <button class="button" onclick="showTable('notInterestedCustomers')">Not Interested Customers</button>
+        </div>
+
+        <div id="interestedCustomers" class="table-container">
+            <h2>Interested Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %} {% if customer.is_interested %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.gender }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="4">No interested customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="notInterestedCustomers" class="table-container">
+            <h2>Not Interested Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %} {% if customer.is_not_interested %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.gender }}</td>
+                        <td>{{ customer.reason }}</td>
+                    </tr>
+                    {% endif %} {% empty %}
+                    <tr>
+                        <td colspan="5">No not interested customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="allCustomers" class="table-container">
+            <h2>All Customers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Interested</th>
+                        <th>Not Interested</th>
+                        <th>Eligible</th>
+                        <th>Not Eligible</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.dob }}</td>
+                        <td>{{ customer.gender }}</td>
+                        <td>{{ customer.address }}</td>
+                        <td>{{ customer.is_interested|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_not_interested|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_eligible|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.is_not_eligible|yesno:"Yes,No" }}</td>
+                        <td>{{ customer.reason }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">No customers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+    <script>
+        // Initialize with the first table visible
+        showTable('interestedCustomers');
+
+        function showTable(tableId) {
+            const tables = document.querySelectorAll('.table-container');
+            tables.forEach(table => {
+                table.style.display = 'none';
+            });
+            document.getElementById(tableId).style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

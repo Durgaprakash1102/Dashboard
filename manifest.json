@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "My Django Chrome Extension",
+    "version": "1.0",
+    "description": "A Chrome extension that interacts with a Django backend.",
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "templates/home.html",
+        "default_icon": {
+            "16": "static/extension.png"
+        }
+    },
+    "icons": {
+        "16": "static/extension.png"
+    }
+}
